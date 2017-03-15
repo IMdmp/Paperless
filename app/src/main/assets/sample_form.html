@@ -1,0 +1,41 @@
+<html>
+
+    <head>
+        <title>
+            Paperless - Form
+        </title>
+    </head>
+    
+    <body>
+        <h1>
+            Demographic Survey
+        </h1>
+        <form method="POST">
+            <!-- short text -->
+            Names: <input type="text" name="name" id = "name"> <br> <br>
+            ID Num: <input type="text" name="idnum" id = "idnum"> <br>
+            <br>
+            <br>
+            <!-- radio buttons -->
+            Sex: <input type = "radio" name="sex" value="male"> Male
+            <input type = "radio" name="sex" value="female"> Female <br>
+            <br>
+            <br>
+            <!-- checklist -->
+            Hobbies: 
+                <input type="checkbox" name="hobby1" value="sports"> Sports <br>
+                <input type="checkbox" name="hobby2" value="music"> Music <br>
+                <input type="checkbox" name="hobby3" value="arts"> Arts <br>
+                <br> 
+                <br> 
+            <!-- long text -->
+            Short biography: <br>
+                <textarea name="bio" rows="10" cols="30">Who are you?
+                </textarea>
+                <br>
+                <br>
+            <input type="submit" value="submit">
+        </form>
+    </body>
+    
+</html>
