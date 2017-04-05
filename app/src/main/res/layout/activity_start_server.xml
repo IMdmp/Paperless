@@ -12,7 +12,7 @@
         android:layout_height="50dp"
         android:layout_margin="10dp"
         android:background="@drawable/go_back_left_arrow"
-        android:id="@+id/button_back"
+        android:id="@+id/ib_back"
         android:contentDescription="Go back"/>
 
     <ImageButton
@@ -28,7 +28,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textSize="28sp"
-        android:text="Tap to start"/>
+        android:text="Tap to start"
+        android:id="@+id/tv_server_status"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -38,7 +39,8 @@
         android:textAllCaps="true"
         android:layout_margin="20dp"
         android:layout_gravity="center_horizontal"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:id="@+id/tv_event_name"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -70,56 +72,58 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginRight="20dp"
             android:gravity="center"
-            android:layout_marginRight="20dp">
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_connected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-thin"
+                android:text="0"
+                android:textSize="50sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
-                android:textSize="50sp"
-                android:fontFamily="sans-serif-thin"
-                android:id="@+id/tv_connected"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
                 android:text="connected"
-                android:textStyle="bold"
                 android:textAllCaps="true"
                 android:textSize="20sp"
-                android:fontFamily="sans-serif-condensed"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginLeft="20dp"
             android:gravity="center"
-            android:layout_marginLeft="20dp">
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_evaluated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-thin"
+                android:text="0"
+                android:textSize="50sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
-                android:textSize="50sp"
-                android:fontFamily="sans-serif-thin"
-                android:id="@+id/tv_evaluated"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
                 android:text="evaluated"
-                android:textStyle="bold"
                 android:textAllCaps="true"
                 android:textSize="20sp"
-                android:fontFamily="sans-serif-condensed"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
