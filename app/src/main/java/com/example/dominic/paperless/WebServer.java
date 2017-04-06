@@ -4,8 +4,11 @@ package com.example.dominic.paperless;
  * Created by Dominic on 2/26/2017.
  */
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
+
+import com.example.dominic.paperless.Model.Answer;
 
 import org.apache.commons.io.FileUtils;
 
@@ -28,8 +31,11 @@ public class WebServer extends NanoHTTPD {
     InputStream is;
     String s;
     final String TAG = "LOCAL_COMPUTER: ";
+    Context c;
+    DatabaseHelper dbHelper;
     public WebServer(int server){
         super(server);
+
     }
 
     @Override
@@ -59,12 +65,25 @@ public class WebServer extends NanoHTTPD {
        // final String json = map.get("postData");
        // Log.i(TAG,"Got POST data: "+json);
 
+        //wait for responses; take data and store in database
+
 
 
         Log.i(TAG,"Got data for name: "+session.getParms().get("name"));
+        if(session.getParms().get("name")!=null) {
+            System.out.println("RECEIVED NON NULL ANSWER");
+
+            Answer a = new Answer();
+            a.setQualitative(Boolean.FALSE);
+            a.setAnswer("4");
+
+            System.out.println("adding to db...");
+            addAnswertoDB(a);
+        }
+       // Log.i(TAG,"Got data for name: "+session.getParms().get("name"));
         Log.i(TAG,"Got data for idnum: "+session.getParms().get("idnum"));
 
-        Log.i(TAG,"test"+ session.getHeaders().get("name"));
+        //   Log.i(TAG,"test"+ session.getHeaders().get("name"));
         return newFixedLengthResponse( msg);
 
 
@@ -78,8 +97,23 @@ public class WebServer extends NanoHTTPD {
         webpage=s;
         return webpage;
     }
+
+    public void addAnswertoDB(Answer a){
+
+        dbHelper.addAnswer(a,1,1);
+
+    }
+
+    public void setContext(Context c ){
+        this.c = c;
+    }
+
     public void setHTMLFile(String s){
         this.s=s;
+    }
+
+    public void setDbHelper(DatabaseHelper dbHelper){
+        this.dbHelper = dbHelper;
     }
 
 
@@ -110,7 +144,7 @@ public class WebServer extends NanoHTTPD {
 //        }
 //
 //        return createResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, "ok i am ");
-//    } 
+//    }
 
     //TODO: RECEIVE DATA FROM CONNECTED DEVICES.
     //TODO: STORE RECEIVED DATA TO DATABASE

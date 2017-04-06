@@ -2,6 +2,7 @@ package com.example.dominic.paperless;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
@@ -13,6 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.dominic.paperless.Model.Answer;
+import com.example.dominic.paperless.Model.Event;
+import com.example.dominic.paperless.Model.Questions;
+import com.example.dominic.paperless.Model.SurveyTaker;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +26,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+
+import static android.R.attr.button;
+import static android.R.attr.data;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //VIEW
-    Button button_startserver, button_stopserver, button_select;
+    Button button_startserver, button_stopserver, button_select,button_checkdb,button_test;
     TextView tv_message;
     RecyclerView rv_task;
     String textfile;
@@ -52,15 +61,23 @@ public class MainActivity extends AppCompatActivity {
         tv_message = (TextView) findViewById(R.id.tv_message);
         rv_task = (RecyclerView) findViewById(R.id.rv_task);
         button_select = (Button) findViewById(R.id.button_select);
-
+        button_checkdb = (Button) findViewById(R.id.button_dbcheck);
+        button_test = (Button) findViewById(R.id.button_test);
         tv_message.setVisibility(View.INVISIBLE);
 
-
+        button_test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testDatabase();
+                Log.i(TAG, "testing database...");
+            }
+        });
         button_startserver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //instantiate new web server
                 adr = new WebServer(DEFAULT_PORT);
+                DatabaseHelper databaseHelper = new DatabaseHelper(getBaseContext());
                 InputStream is;
                 try {
                     is = getResources().getAssets().open("sample_form.html");
@@ -71,11 +88,12 @@ public class MainActivity extends AppCompatActivity {
 
 
                 adr.setHTMLFile(textfile);
-                try {
-                    is = getAssets().open("terms.txt");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                adr.setContext(getBaseContext());
+                adr.setDbHelper(databaseHelper);
+
+
+            //  testDatabase();
+
                 try {
                     //start
                     if (!isStarted) {
@@ -93,6 +111,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        button_checkdb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent dbmanager = new Intent(getBaseContext(),AndroidDatabaseManager.class);
+                startActivity(dbmanager);
+            }
+        } );
 
 
         button_stopserver.setOnClickListener(new View.OnClickListener() {
@@ -129,7 +156,41 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("stopping server.");
         }
     }
+    public void testDatabase(){
+        DatabaseHelper databaseHelper = new DatabaseHelper(getBaseContext());
+        databaseHelper.test();
+        Event e = new Event();
+        e.setFormName("test");
+        databaseHelper.createEvent(e);
 
+        int eventID = databaseHelper.getEventID(e.getFormName());
+        Log.i(TAG, "eventID taken: "+eventID);
+        SurveyTaker st = new SurveyTaker();
+        st.setDateAnswered("September");
+        st.setIdNumber("11303247");
+        st.setRespondentEmail("pags@gmail.com");
+        st.setRespondentName("Doms");
+       // databaseHelper.createSurveyTaker(st,eventID);
+
+        Questions q  = new Questions();
+        q.setQuestion("Rate your experience so far: ");
+        databaseHelper.createSurveyTaker(st,eventID);
+        int surveyTakerID=  databaseHelper.getSurveyTakerID(Integer.parseInt(st.getIdNumber()));
+
+
+        int questionID =  1;
+
+
+        Answer a = new Answer();
+        a.setAnswer("4");
+        a.setQualitative(Boolean.FALSE);
+
+
+
+        databaseHelper.addQuestion(q,eventID,surveyTakerID);
+        databaseHelper.addAnswer(a,questionID,surveyTakerID);
+        //q.getId();
+    }
 
     public boolean isConnectedInWifi() {
         WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
