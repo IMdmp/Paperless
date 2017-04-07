@@ -34,7 +34,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Alumni homecomming"
+        android:text="Alumni homecoming"
         android:textSize="25sp"
         android:textAllCaps="true"
         android:layout_margin="20dp"
@@ -65,6 +65,30 @@
             android:textSize="15sp"
             android:gravity="center"
             android:textStyle="bold|italic"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:id="@+id/ll_view_stats"
+        android:layout_margin="20dp">
+
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="30dp"
+            android:background="@drawable/view_stats"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="view stats"
+            android:textAllCaps="true"
+            android:layout_marginStart="10dp"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
     </LinearLayout>
 
@@ -126,30 +150,6 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:id="@+id/ll_view_stats"
-        android:layout_margin="20dp">
-
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="30dp"
-            android:background="@drawable/view_stats"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="view stats"
-            android:textAllCaps="true"
-            android:layout_marginStart="10dp"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
 
     </LinearLayout>
 

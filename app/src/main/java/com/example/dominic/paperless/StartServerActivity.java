@@ -1,5 +1,6 @@
 package com.example.dominic.paperless;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,7 +9,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class StartServerActivity extends AppCompatActivity {
+import static com.example.dominic.paperless.R.drawable.power_button_off;
+
+public class StartServerActivity extends Activity {
 
     ImageButton ibBack, ibStartServer;
     TextView tvServerStatus,tvEventName, tvConnected, tvEvaluated;
@@ -40,14 +43,14 @@ public class StartServerActivity extends AppCompatActivity {
             ibBack.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    finish();
                 }
             });
 
             ibStartServer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    ibStartServer.setImageResource(R.drawable.power_button_on);
                 }
             });
 

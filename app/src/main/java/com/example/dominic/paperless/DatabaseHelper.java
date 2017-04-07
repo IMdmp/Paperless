@@ -26,7 +26,7 @@ import static android.content.ContentValues.TAG;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String SCHEMA  = "paperless";
-    public static final int    VERSION = 9;
+    public static final int    VERSION = 10;
 
     public DatabaseHelper(Context context) {
 
@@ -36,6 +36,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String sql = " CREATE TABLE " + Event.TABLE + " ( "
                 +    Event.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                +    Event.COLUMN_ORGANIZERNAME + " TEXT NOT NULL , "
                 +    Event.COLUMN_FORMNAME + " TEXT NOT NULL ); ";
 
         String sql2 = "CREATE TABLE " + SurveyTaker.TABLE + " ( "
@@ -111,7 +112,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(Event.COLUMN_FORMNAME,e.getFormName());
-
+        cv.put(Event.COLUMN_ORGANIZERNAME,e.getOrganizerName());
         long id= db.insert(Event.TABLE,null,cv);
         db.close();
         return  id;
@@ -234,6 +235,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Cursor  c = db.rawQuery(sql,null);
         return c;
+    }
+
+
+    public Cursor getAllEvents(){
+        SQLiteDatabase db = getReadableDatabase();
+
+        //SELECT * FROM TASK;
+        return db.query(Event.TABLE,
+                null,
+                null,
+                null,
+                null,null,null);
     }
 //    public int[] getQuantitativeAnswersFromQuestion(Questions q){
 //        SQLiteDatabase db = getReadableDatabase();
