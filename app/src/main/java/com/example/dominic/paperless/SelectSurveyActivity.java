@@ -36,6 +36,7 @@ public class SelectSurveyActivity extends Activity {
          Event e = new Event();
          e.setFormName("Alumni Homecoming");
          e.setOrganizerName("Student Lasallian Animators");
+         e.setHtmlName("event_eval_survey.html");
          databaseHelper.createEvent(e);
 
 
@@ -56,6 +57,7 @@ public class SelectSurveyActivity extends Activity {
                                                      public void onItemClick(View v) {
                                                          Intent i = new Intent();
                                                          i.setClass(v.getContext(),StartServerActivity.class);
+                                                         i.putExtra("htmlName",(String) v.getTag());
                                                       //   i.putExtra("id", (int) v.getTag());
                                                          v.getContext().startActivity(i);
                                                      }

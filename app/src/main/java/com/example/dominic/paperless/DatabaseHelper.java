@@ -26,7 +26,7 @@ import static android.content.ContentValues.TAG;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String SCHEMA  = "paperless";
-    public static final int    VERSION = 10;
+    public static final int    VERSION = 11;
 
     public DatabaseHelper(Context context) {
 
@@ -37,6 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String sql = " CREATE TABLE " + Event.TABLE + " ( "
                 +    Event.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 +    Event.COLUMN_ORGANIZERNAME + " TEXT NOT NULL , "
+                +    Event.COLUMN_HTMLNAME + " TEXT NOT NULL , "
                 +    Event.COLUMN_FORMNAME + " TEXT NOT NULL ); ";
 
         String sql2 = "CREATE TABLE " + SurveyTaker.TABLE + " ( "
@@ -113,6 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(Event.COLUMN_FORMNAME,e.getFormName());
         cv.put(Event.COLUMN_ORGANIZERNAME,e.getOrganizerName());
+        cv.put(Event.COLUMN_HTMLNAME,e.getHtmlName());
         long id= db.insert(Event.TABLE,null,cv);
         db.close();
         return  id;

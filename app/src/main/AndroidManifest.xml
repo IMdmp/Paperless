@@ -24,7 +24,8 @@
         <activity android:name=".MainActivity">
         </activity>
         <activity android:name=".StartServerActivity" />
-
+        <activity android:name=".AndroidDatabaseManager">
+        </activity>
     </application>
 
 </manifest>

@@ -37,7 +37,8 @@ public class SurveyAdapter  extends CursorRecyclerViewAdapter<SurveyAdapter.Surv
         viewHolder.tv_organizer_name.setText(e.getOrganizerName());
         viewHolder.tv_organizer_initial.setText(firstLetter);
 
-
+        String htmlName = cursor.getString(cursor.getColumnIndex(Event.COLUMN_HTMLNAME));
+        viewHolder.llayout_one.setTag(htmlName);
         viewHolder.llayout_one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
