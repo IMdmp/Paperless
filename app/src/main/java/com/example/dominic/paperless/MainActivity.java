@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        databaseHelper.addQuestion(q,eventID,surveyTakerID);
+        databaseHelper.addQuestion(q,eventID);
         databaseHelper.addAnswer(a,questionID,surveyTakerID);
         //q.getId();
     }

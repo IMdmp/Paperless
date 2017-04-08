@@ -26,7 +26,7 @@ import static android.content.ContentValues.TAG;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String SCHEMA  = "paperless";
-    public static final int    VERSION = 11;
+    public static final int    VERSION = 16;
 
     public DatabaseHelper(Context context) {
 
@@ -43,9 +43,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String sql2 = "CREATE TABLE " + SurveyTaker.TABLE + " ( "
                 +     SurveyTaker.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 +     SurveyTaker.COLUMN_EVENTID + " INTEGER, "
-                +     SurveyTaker.COLUMN_DATEANSWERED + " TEXT NOT NULL, "
+                +     SurveyTaker.COLUMN_DATEANSWERED + " TEXT , "
                 +     SurveyTaker.COLUMN_RESPONDENTNAME +" TEXT NOT NULL, "
-                +     SurveyTaker.COLUMN_RESPONDENTEMAIL+" TEXT NOT NULL, "
+                +     SurveyTaker.COLUMN_RESPONDENTEMAIL+" TEXT , "
                 +     SurveyTaker.COLUMN_IDNUMBER + " TEXT, "
                 +     "FOREIGN KEY" + " (" + SurveyTaker.COLUMN_EVENTID+ " ) "+ " REFERENCES "
                 +     Event.TABLE+"("+Event.COLUMN_ID+ ") );";
@@ -54,6 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String sql3 = "CREATE TABLE " + Questions.TABLE + " ( "
                 +     Questions.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 +     Questions.COLUMN_QUESTION + " TEXT NOT NULL, "
+                +     Questions.COLUMN_ISQUALITATIVE + "BOOLEAN,"
                 +     Questions.COLUMN_EVENTID + " INTEGER, "
                 +     Questions.COLUMN_SURVEYID +" INTEGER, "
                 +     "FOREIGN KEY" + " (" + Questions.COLUMN_EVENTID+ " ) "+ " REFERENCES "
@@ -200,12 +201,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public long addQuestion(Questions q,int eventID,int surveyID ){
+    public long addQuestion(Questions q,int eventID ){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(Questions.COLUMN_QUESTION,q.getQuestion());
         cv.put(Questions.COLUMN_EVENTID,eventID);
-        cv.put(Questions.COLUMN_SURVEYID,surveyID);
+        cv.put(Questions.COLUMN_ISQUALITATIVE,q.getIsQualitative());
+     //   cv.put(Questions.COLUMN_SURVEYID,surveyID);
 
         long id= db.insert(Questions.TABLE,null,cv);
         db.close();
@@ -228,6 +230,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long id= db.insert(Answer.TABLE,null,cv);
         db.close();
         return  id;
+    }
+
+
+    public ArrayList<Questions> getEventQuestions(Event e){
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<Questions> q  = new ArrayList<Questions>();
+        String sql = "SELECT * " + "  FROM " + Questions.TABLE + " WHERE (("+e.getId() +" = " + Questions.COLUMN_EVENTID+");";
+        System.out.println("sql generated from get event questions: ");
+        Cursor c= db.rawQuery(sql,null);
+
+        do{
+            Questions question = new Questions();
+            question.setId(
+            c.getInt(c.getColumnIndex(Questions.COLUMN_ID)));
+            question.setIsQualitative(
+                    Boolean.valueOf((c.getString(c.getColumnIndex(Questions.COLUMN_ISQUALITATIVE)))));
+
+          //  q.add();
+        }while(c.moveToNext());
+        return null;
     }
     public Cursor getData(Questions q,Boolean isQualitative){
         SQLiteDatabase db = getReadableDatabase();

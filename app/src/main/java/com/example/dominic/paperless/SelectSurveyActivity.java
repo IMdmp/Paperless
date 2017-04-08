@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.dominic.paperless.Model.Event;
+import com.example.dominic.paperless.Model.Questions;
 
 import static android.R.attr.x;
 
@@ -20,6 +21,7 @@ public class SelectSurveyActivity extends Activity {
     RecyclerView.Adapter rvAdapter;
     RecyclerView.LayoutManager rvLayoutManager;
     DatabaseHelper databaseHelper;
+ public   int eventID;
     SurveyAdapter surveyAdapter;
     private static final String TAG = "LOCAL_SERVER";
     @Override
@@ -36,8 +38,22 @@ public class SelectSurveyActivity extends Activity {
          Event e = new Event();
          e.setFormName("Alumni Homecoming");
          e.setOrganizerName("Student Lasallian Animators");
-         e.setHtmlName("event_eval_survey.html");
-         databaseHelper.createEvent(e);
+         e.setHtmlName("recollection_eval_survey.html");
+
+
+        Event e1 = new Event();
+        e1.setFormName("Demographic Survey");
+        e1.setOrganizerName("Legit Surveyors");
+        e.setHtmlName("demographic_survey.html");
+
+        Event e2 = new Event();
+        e2.setFormName("Event Evaluation Survey");
+        e2.setOrganizerName("Event Solutions");
+        e2.setHtmlName("event_eval_survey.html");
+
+        databaseHelper.createEvent(e);
+        databaseHelper.createEvent(e1);
+        databaseHelper.createEvent(e2);
 
 
     }
@@ -57,7 +73,9 @@ public class SelectSurveyActivity extends Activity {
                                                      public void onItemClick(View v) {
                                                          Intent i = new Intent();
                                                          i.setClass(v.getContext(),StartServerActivity.class);
-                                                         i.putExtra("htmlName",(String) v.getTag());
+                                                       eventID = (int) v.getTag(R.string.eventID);
+                                                         i.putExtra("htmlName",(String) v.getTag(R.string.htmlName));
+                                                         i.putExtra("eventID",(int) v.getTag(R.string.eventID));
                                                       //   i.putExtra("id", (int) v.getTag());
                                                          v.getContext().startActivity(i);
                                                      }

@@ -1,9 +1,10 @@
 package com.example.dominic.paperless;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class ViewStatisticsActivity extends AppCompatActivity {
+public class ViewStatisticsActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

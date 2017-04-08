@@ -13,6 +13,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.dominic.paperless.Model.Questions;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -53,7 +55,74 @@ public class StartServerActivity extends Activity {
 
             llViewStats = (LinearLayout) findViewById(R.id.ll_view_stats);
 
-                String htmlName = getIntent().getStringExtra("htmlName");
+        Questions q1 = new Questions();
+        q1.setQuestion("Full Name");
+        q1.setIsQualitative(Boolean.TRUE);
+
+
+        Questions q2 = new Questions();
+        q2.setQuestion("ID Number");
+        q2.setIsQualitative(Boolean.TRUE);
+
+        Questions q3 = new Questions();
+        q3.setQuestion("How would you rate this event?");
+        q3.setIsQualitative(Boolean.FALSE);
+
+        Questions q4 = new Questions();
+        q4.setQuestion("How would you rate your host?");
+        q4.setIsQualitative(Boolean.FALSE);
+
+        String htmlName = getIntent().getStringExtra("htmlName");
+        int eventID = getIntent().getIntExtra("eventID",2);
+        Log.i(TAG, "GOT EVENT ID: "+eventID);
+
+        Questions q5 = new Questions();
+        q5.setQuestion("Sex");
+        q5.setIsQualitative(Boolean.TRUE);
+
+        Questions q6 = new Questions();
+        q6.setQuestion("Hobbies");
+        q6.setIsQualitative(Boolean.TRUE);
+
+        Questions q7 = new Questions();
+        q7.setQuestion("Biography");
+        q7.setIsQualitative(Boolean.TRUE);
+
+        Questions q8 = new Questions();
+        q8.setQuestion("How would you rate your recollection?");
+        q8.setIsQualitative(Boolean.FALSE);
+
+        Questions q9 = new Questions();
+        q9.setQuestion("How would you rate the facilitator?");
+        q9.setIsQualitative(Boolean.FALSE);
+
+        Questions q10 = new Questions();
+        q10.setQuestion("How would you rate the co-facilitator?");
+        q10.setIsQualitative(Boolean.FALSE);
+
+
+        DatabaseHelper databaseHelper = new DatabaseHelper(getBaseContext());
+        databaseHelper.addQuestion(q1,1);
+        databaseHelper.addQuestion(q2,1);
+        databaseHelper.addQuestion(q3,1);
+        databaseHelper.addQuestion(q4,1);
+
+     //   DatabaseHelper databaseHelper = new DatabaseHelper(getBaseContext());
+        databaseHelper.addQuestion(q1,2);
+        databaseHelper.addQuestion(q2,2);
+        databaseHelper.addQuestion(q5,2);
+        databaseHelper.addQuestion(q6,2);
+        databaseHelper.addQuestion(q7,2);
+      //  databaseHelper.addQuestion(q4,eventID);
+
+        databaseHelper.addQuestion(q1,3);
+        databaseHelper.addQuestion(q2,3);
+        databaseHelper.addQuestion(q8,3);
+        databaseHelper.addQuestion(q9,3);
+        databaseHelper.addQuestion(q10,3);
+
+
+
              //set on click listeners
             ibBack.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -61,7 +130,8 @@ public class StartServerActivity extends Activity {
                     finish();
                 }
             });
-            ibStartServer.setTag(htmlName);
+            ibStartServer.setTag(R.string.htmlName,htmlName);
+            ibStartServer.setTag(R.string.eventID,eventID);
             ibStartServer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -72,18 +142,18 @@ public class StartServerActivity extends Activity {
                     DatabaseHelper databaseHelper = new DatabaseHelper(getBaseContext());
                     InputStream is;
                     try {
-                       String html= (String) v.getTag();
+                       String html= (String) v.getTag(R.string.htmlName);
                         is = getResources().getAssets().open(html);
                         textfile = convertStreamToString(is);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
 
-
+                    int eventID = (int) v.getTag(R.string.eventID);
                     adr.setHTMLFile(textfile);
                     adr.setContext(getBaseContext());
                     adr.setDbHelper(databaseHelper);
-
+                    adr.setEventID(eventID);
 
                     //  testDatabase();
 
@@ -100,10 +170,10 @@ public class StartServerActivity extends Activity {
                             isStarted = true;
                         }
                         else {
-                            isStarted = false;
-                            adr.stop();
-                            Log.i(TAG, "Server Stopped.");
-                            ibStartServer.setImageResource(R.drawable.power_button_off);
+//                            isStarted = false;
+//                            adr.stop();
+//                            Log.i(TAG, "Server Stopped.");
+//                            ibStartServer.setImageResource(R.drawable.power_button_off);
                         }
                     } catch (IOException ioe) {
                         Log.w(TAG, "The server could not start.");
@@ -124,17 +194,12 @@ public class StartServerActivity extends Activity {
             llViewStats.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent dbmanager = new Intent(getBaseContext(),AndroidDatabaseManager.class);
+                    startActivity(dbmanager);
                 }
             });
 
-        button_checkdb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent dbmanager = new Intent(getBaseContext(),AndroidDatabaseManager.class);
-                startActivity(dbmanager);
-            }
-        } );
+
 
     }
 
