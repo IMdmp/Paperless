@@ -26,7 +26,7 @@ import static android.content.ContentValues.TAG;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String SCHEMA  = "paperless";
-    public static final int    VERSION = 16;
+    public static final int    VERSION = 21;
 
     public DatabaseHelper(Context context) {
 
@@ -54,7 +54,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String sql3 = "CREATE TABLE " + Questions.TABLE + " ( "
                 +     Questions.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 +     Questions.COLUMN_QUESTION + " TEXT NOT NULL, "
-                +     Questions.COLUMN_ISQUALITATIVE + "BOOLEAN,"
                 +     Questions.COLUMN_EVENTID + " INTEGER, "
                 +     Questions.COLUMN_SURVEYID +" INTEGER, "
                 +     "FOREIGN KEY" + " (" + Questions.COLUMN_EVENTID+ " ) "+ " REFERENCES "
@@ -206,7 +205,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues cv = new ContentValues();
         cv.put(Questions.COLUMN_QUESTION,q.getQuestion());
         cv.put(Questions.COLUMN_EVENTID,eventID);
-        cv.put(Questions.COLUMN_ISQUALITATIVE,q.getIsQualitative());
      //   cv.put(Questions.COLUMN_SURVEYID,surveyID);
 
         long id= db.insert(Questions.TABLE,null,cv);
@@ -220,12 +218,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         cv.put(Answer.COLUMN_ANSWER,a.getAnswer());
 
-
-        cv.put(Answer.COLUMN_ISQUALITATIVE,a.getQualitative());
         cv.put(Answer.COLUMN_QUESTIONID,questionID);
         cv.put(Answer.COLUMN_SURVEYID,surveyTakerID);
 
-
+cv.put(Answer.COLUMN_ISQUALITATIVE,Boolean.TRUE);
 
         long id= db.insert(Answer.TABLE,null,cv);
         db.close();

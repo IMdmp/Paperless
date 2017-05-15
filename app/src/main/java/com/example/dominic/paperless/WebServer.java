@@ -72,6 +72,7 @@ public class WebServer extends NanoHTTPD {
         parameters.add(q2);
         parameters.add(q3);
         parameters.add(q4);
+        parameters.add(q5);
 
     }
 
@@ -126,7 +127,7 @@ public class WebServer extends NanoHTTPD {
                 Log.i(TAG,"set respondent idnum: "+st.getIdNumber());
                 Log.i(TAG,"test map:" +  map.get("name"));
 
-                if(i==1){
+                if(i<=1){
                     if(!lock){
                 dbHelper.createSurveyTaker(st,eventID);}
 
@@ -138,7 +139,7 @@ public class WebServer extends NanoHTTPD {
                 a.setAnswer(session.getParms().get(parameter));
                 a.setQualitative(q1.getIsQualitative());
                 if(i>1) {
-                    dbHelper.addAnswer(a, q1.getId(), surveyTakerID);
+                    dbHelper.addAnswer(a, 1, surveyTakerID);
                     Log.i(TAG, "set answer: " + a.getAnswer());
                 }
 

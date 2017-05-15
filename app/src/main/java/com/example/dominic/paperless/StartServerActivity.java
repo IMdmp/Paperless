@@ -128,6 +128,8 @@ public class StartServerActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     finish();
+                    adr.stop();
+                    isStarted=false;
                 }
             });
             ibStartServer.setTag(R.string.htmlName,htmlName);
@@ -163,7 +165,11 @@ public class StartServerActivity extends Activity {
                             adr.start();
                             WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
                             String ip = android.text.format.Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+
+                            ///TODO: IF DOESN WORK DELETE SHIT
+                           String ip2 = "Server running at " + ip + ":8080";
                             Log.i(TAG, "Server running at " + ip + ":8080");
+                            etIPAdress.setText(ip2);
                             ibStartServer.setImageResource(R.drawable.power_button_on);
 //                            tv_message.setText("\"Server running at \" " + ip + "\":8080\" \n Connected phones ip address: 192.168.42.1:8080");
 //                            tv_message.setVisibility(View.VISIBLE);

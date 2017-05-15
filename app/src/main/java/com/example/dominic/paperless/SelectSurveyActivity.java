@@ -38,18 +38,18 @@ public class SelectSurveyActivity extends Activity {
          Event e = new Event();
          e.setFormName("Alumni Homecoming");
          e.setOrganizerName("Student Lasallian Animators");
-         e.setHtmlName("recollection_eval_survey.html");
-
+         e.setHtmlName("event_eval_survey.html");
 
         Event e1 = new Event();
-        e1.setFormName("Demographic Survey");
-        e1.setOrganizerName("Legit Surveyors");
-        e.setHtmlName("demographic_survey.html");
+        e1.setFormName("Social Demographics");
+        e1.setOrganizerName("The surveyors");
+        e1.setHtmlName("demographic_survey.html");
 
         Event e2 = new Event();
-        e2.setFormName("Event Evaluation Survey");
-        e2.setOrganizerName("Event Solutions");
-        e2.setHtmlName("event_eval_survey.html");
+        e2.setFormName("Eval Survey");
+        e2.setOrganizerName("Event solutions");
+        e2.setHtmlName("recollection_eval_survey.html");
+
 
         databaseHelper.createEvent(e);
         databaseHelper.createEvent(e1);
@@ -87,8 +87,8 @@ public class SelectSurveyActivity extends Activity {
             //during add new task return
             //insert new task at the end of the list
 
-            surveyAdapter.swapCursor(newData);
-            surveyAdapter.notifyItemInserted(surveyAdapter.getCursor().getCount());
+//            surveyAdapter.swapCursor(newData);
+   //         surveyAdapter.notifyItemInserted(surveyAdapter.getCursor().getCount());
         }
 
     }
