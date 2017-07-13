@@ -76,7 +76,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //instantiate new web server
-                adr = new WebServer(DEFAULT_PORT);
+                try {
+                    adr = new WebServer(DEFAULT_PORT,getBaseContext(),1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 DatabaseHelper databaseHelper = new DatabaseHelper(getBaseContext());
                 InputStream is;
                 try {
@@ -87,9 +91,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-                adr.setHTMLFile(textfile);
-                adr.setContext(getBaseContext());
-                adr.setDbHelper(databaseHelper);
+//                adr.setHTMLFile(textfile);
+//                adr.setContext(getBaseContext());
+//                adr.setDbHelper(databaseHelper);
 
 
             //  testDatabase();
@@ -188,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         databaseHelper.addQuestion(q,eventID);
-        databaseHelper.addAnswer(a,questionID,surveyTakerID);
+        databaseHelper.addAnswer(a,questionID);
         //q.getId();
     }
 

@@ -23,6 +23,9 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/power_button_off"
         android:contentDescription="Start/stop server"/>
+
+
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,7 +64,7 @@
             android:layout_marginLeft="10dp"
             android:paddingBottom="5dp"
             android:background="@drawable/text_box"
-            android:hint="(Leave blank for default)"
+            android:textColor="#000"
             android:textSize="15sp"
             android:gravity="center"
             android:textStyle="bold|italic"/>

@@ -9,21 +9,27 @@ public class Event {
 
     public static final String TABLE = "eventform";
     public static final String COLUMN_ID = "_eventformID";
+    public static final String COLUMN_TIMESTAKEN = "timestaken";
     public static final String COLUMN_HTMLNAME = "htmlname";
     public static final String COLUMN_ORGANIZERNAME="organizername";
     public static final String COLUMN_FORMNAME = "eventformName";
+    public static final String COLUMN_ANSWERCLUSTER = "answercluster";
 
-    private int id;
+    private int id,timesTaken,answerCluster;
     private String formName,organizerName,htmlName;
 
     public Event(){
 
     }
+
+
+
     public Event(int id, String formName, String organizerName, String htmlName) {
         this.id = id;
         this.formName = formName;
         this.organizerName = organizerName;
         this.htmlName = htmlName;
+
     }
 
     public Event(String formName, String organizerName, String htmlName) {
@@ -32,6 +38,37 @@ public class Event {
         this.htmlName = htmlName;
     }
 
+    public Event(int id, String formName, String organizerName, String htmlName, int timesTaken) {
+        this.id =id;
+        this.formName = formName;
+        this.organizerName = organizerName;
+        this.htmlName = htmlName;
+        this.timesTaken=timesTaken;
+    }
+
+    public Event(int id, String formName, String organizerName, String htmlName,int timesTaken, int answerCluster) {
+        this.id = id;
+        this.timesTaken = timesTaken;
+        this.answerCluster = answerCluster;
+        this.formName = formName;
+        this.organizerName = organizerName;
+        this.htmlName = htmlName;
+    }
+
+    public int getAnswerCluster() {
+        return answerCluster;
+    }
+
+    public void setAnswerCluster(int answerCluster) {
+        this.answerCluster = answerCluster;
+    }
+    public int getTimesTaken() {
+        return timesTaken;
+    }
+
+    public void setTimesTaken(int timesTaken) {
+        this.timesTaken = timesTaken;
+    }
     public int getId() {
         return id;
     }

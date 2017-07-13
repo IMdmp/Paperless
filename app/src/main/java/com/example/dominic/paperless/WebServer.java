@@ -5,14 +5,14 @@ package com.example.dominic.paperless;
  */
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.util.Log;
 
+import android.content.Context;
+
 import com.example.dominic.paperless.Model.Answer;
+import com.example.dominic.paperless.Model.Event;
 import com.example.dominic.paperless.Model.Questions;
 import com.example.dominic.paperless.Model.SurveyTaker;
-
-import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,58 +26,49 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import fi.iki.elonen.NanoHTTPD;
 
-import static android.R.attr.name;
+import static android.R.attr.data;
+import static android.R.attr.key;
+import static android.R.attr.port;
+import static android.R.attr.value;
+import static android.os.Build.VERSION_CODES.M;
 
 public class WebServer extends NanoHTTPD {
     InputStream is;
-    String s;
     final String TAG = "LOCAL_COMPUTER: ";
-    Context c;
-    int eventID;
+    Context mContext;
+    String htmlFile;
     DatabaseHelper dbHelper;
-    Boolean lock;
-    ArrayList<Questions> parameters;
+    Event e;
+    Boolean lock =false;
+    /**
+     * Common mime types for dynamic content
+     */
+    public static final String
+            MIME_PLAINTEXT = "text/plain",
+            MIME_HTML = "text/html",
+            MIME_JS = "application/javascript",
+            MIME_CSS = "text/css",
+            MIME_PNG = "image/png",
+            MIME_DEFAULT_BINARY = "application/octet-stream",
+            MIME_XML = "text/xml";
+    Response.Status HTTP_OK= Response.Status.OK;
 
 
-    public WebServer(int server){
-        super(server);
-        parameters = new ArrayList<Questions>();
-        Questions q1 = new Questions();
-        q1.setParameterName("name");
-        q1.setIsQualitative(Boolean.TRUE);
-     //   dbHelper.getQuestionID(q1.)
-        Questions q2 = new Questions();
-        q2.setParameterName("idnum");
-        q2.setIsQualitative(Boolean.TRUE);
 
-        Questions q3 = new Questions();
-        q3.setParameterName("question1");
-        q3.setIsQualitative(Boolean.FALSE);
+    public WebServer(int port,Context ctx,int eventID) throws IOException {
 
-        Questions q4 = new Questions();
-        q4.setParameterName("question2");
-        q4.setIsQualitative(Boolean.FALSE);
+        super(port);
+        mContext=ctx;
 
+        dbHelper = new DatabaseHelper(ctx);
+        e =  dbHelper.getEvent(eventID);
+        this.htmlFile=e.getHtmlName();
 
-        Questions q5 = new Questions();
-        q5.setParameterName("question3");
-        q5.setIsQualitative(Boolean.FALSE);
-
-
-        parameters.add(q1);
-        parameters.add(q2);
-        parameters.add(q3);
-        parameters.add(q4);
-        parameters.add(q5);
-
+        Log.i(TAG,"event html file: " +this.htmlFile);
     }
-
-
-
     @Override
     public Response serve(String uri, Method method, Map<String, String> headers, Map<String, String> parms, Map<String, String> files) {
         return super.serve(uri, method, headers, parms, files);
@@ -86,14 +77,13 @@ public class WebServer extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
-        String answer = "";
+
+
         Method method = session.getMethod();
-        Log.i(TAG,"SESSION START. ");
+        //Log.i(TAG,"SESSION START. ");
+      //  Log.i(TAG,"SERVE ::  URI "+session.getUri());
 
-        //   Log.i(TAG, "local server requesting uri " + uri + " with parameters " + parameters.toString() );
-        String msg = createStringHTML();
-
-    //   Dunno how to use this yet.
+        //   Dunno how to use this yet.
         final HashMap<String, String> map = new HashMap<String, String>();
         try {
             session.parseBody(map);
@@ -102,149 +92,119 @@ public class WebServer extends NanoHTTPD {
         } catch (ResponseException e) {
             e.printStackTrace();
         }
-       // final String json = map.get("postData");
-       // Log.i(TAG,"Got POST data: "+json);
+        //final String json = map.get("content");
+      //  Log.i(TAG,"JSON: "+json);
 
-        //wait for responses; take data and store in database
+        if(!session.getParms().isEmpty()){
+            Log.i(TAG,"session: "+ session.getParms());
+            final Map<String,String> map1= session.getParms();
+            addToDb(map1);
+        }
+        final StringBuilder buf = new StringBuilder();
+//        for (Entry<Object, Object> kv : header.entrySet())
+//            buf.append(kv.getKey() + " : " + kv.getValue() + "\n");
+        InputStream mbuffer = null;
+       // Log.i(TAG,"went here." );
+        try {
+            if(session.getUri()!=null){
+            //    Log.i(TAG,"went here too." );
+                if(session.getUri().contains(".js")){
+                    mbuffer = mContext.getAssets().open(session.getUri().substring(1));
+                    return  newFixedLengthResponse(HTTP_OK, MIME_JS, convertStreamToString(mbuffer));
+                }else if(session.getUri().contains(".css")) {
+                    mbuffer = mContext.getAssets().open(session.getUri().substring(1));
+                    return newFixedLengthResponse(HTTP_OK, MIME_CSS, convertStreamToString(mbuffer));
 
-
-        int numParameters = parameters.size();
-        for(int i=0;i<numParameters;i++){
-            lock =false;
-            Log.i(TAG,"ITERATION: "+i);
-            Questions q1 = parameters.get(i);
-            String parameter = q1.getParameterName();
-            Log.i(TAG,"parameter: "+parameter);
-
-
-            if(session.getParms().get(parameter)!=null) {
-                Log.i(TAG,"Got dynamic data for "+parameter+ ": " +session.getParms().get(parameter));
-                SurveyTaker st  = new SurveyTaker();
-
-                st.setRespondentName(session.getParms().get("name"));
-                st.setIdNumber(session.getParms().get("idnum"));
-                Log.i(TAG,"set respondent name: "+st.getRespondentName());
-                Log.i(TAG,"set respondent idnum: "+st.getIdNumber());
-                Log.i(TAG,"test map:" +  map.get("name"));
-
-                if(i<=1){
-                    if(!lock){
-                dbHelper.createSurveyTaker(st,eventID);}
-
-                lock =true;
                 }
-                int surveyTakerID = dbHelper.getSurveyTakerID(Integer.parseInt(st.getIdNumber()));
-                Answer a =new Answer();
-
-                a.setAnswer(session.getParms().get(parameter));
-                a.setQualitative(q1.getIsQualitative());
-                if(i>1) {
-                    dbHelper.addAnswer(a, 1, surveyTakerID);
-                    Log.i(TAG, "set answer: " + a.getAnswer());
+//                }else if(session.getUri().contains(".png")){
+//                    mbuffer = mContext.getAssets().open(session.getUri().substring(1));
+//                    // HTTP_OK = "200 OK" or HTTP_OK = Status.OK;(check comments)
+//                    return  newFixedLengthResponse(HTTP_OK, MIME_PNG, convertStreamToString(mbuffer));
+//                }
+                else{
+               //     Log.i(TAG,"return html:");
+//                    mbuffer = mContext.getAssets().open();
+                //    Log.i(TAG,"contwext"+ mbuffer.toString());
+                    return newFixedLengthResponse(HTTP_OK, MIME_HTML, convertStreamToString(mbuffer));
                 }
-
+            }
+            else{
+             //   Log.i(TAG,"return html:");
+                mbuffer = mContext.getAssets().open(htmlFile);
+              //  Log.i(TAG,"context"+ mbuffer.toString());
+                return newFixedLengthResponse(HTTP_OK, MIME_HTML,convertStreamToString(mbuffer));
             }
 
+
+        } catch (IOException e) {
+            Log.d(TAG,"Error opening file"+session.getUri().substring(1));
+            e.printStackTrace();
         }
 
-//        if(session.getParms().get("name")!=null) {
-//            System.out.println("RECEIVED NON NULL ANSWER");
-//
-//            Answer a = new Answer();
-//            a.setQualitative(Boolean.FALSE);
-//            a.setAnswer("4");
-//
-//            System.out.println("adding to db...");
-//            addAnswertoDB(a);
-//        }
-       // Log.i(TAG,"Got data for name: "+session.getParms().get("name"));
-       // Log.i(TAG,"Got data for idnum: "+session.getParms().get("idnum"));
-
-        //   Log.i(TAG,"test"+ session.getHeaders().get("name"));
-        return newFixedLengthResponse( msg);
-
-
-
-
-        //return new NanoHTTPD.Response(answer);
-        // return new Response(Response.Status.OK, "image/jpg", imageFile);
-    }
-
-
-
-    private Response POST(IHTTPSession session){
-
-        String uri = session.getUri();
-        System.out.println("WENT HERE>>>>>>>TEST");
-      //  return createResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, "ok i am ");
-        return newFixedLengthResponse("test");
-    }
-    public String createStringHTML(){
-        String webpage="";
-        webpage=s;
-        return webpage;
-    }
-
-    public void addAnswertoDB(Answer a){
-
-        dbHelper.addAnswer(a,1,1);
+        return newFixedLengthResponse(HTTP_OK, MIME_HTML, String.valueOf(mbuffer));
 
     }
-    public void setQuestions(ArrayList<Questions> q){
-        this.parameters = q;
-    }
-    public void setContext(Context c ){
-        this.c = c;
-    }
 
-    public void setHTMLFile(String s){
-        this.s=s;
-    }
-
-    public void setDbHelper(DatabaseHelper dbHelper){
-        this.dbHelper = dbHelper;
-    }
-
-    public void setEventID(int eventID){
-        this.eventID = eventID;
-        Log.i(TAG,"Event ID got: "+eventID);
-    }
-
-
-    public void testParameters(){
-
-    }
-    private int getCategoryPos(String category) {
-
-        return parameters.indexOf(category);
-    }
-
-//    private Response POST(IHTTPSession session) {
-//        String uri = session.getUri();
-//
-//        try {
-//            Map<String, String> files = new HashMap<String, String>();
-//            session.parseBody(files);
-//
-//            Set<String> keys = files.keySet();
-//            for(String key: keys){
-//                String name = key;
-//                String loaction = files.get(key);
-//
-//                File tempfile = new File(loaction);
-//                Files.copy(tempfile.toPath(), new File("destinamtio_path"+name).toPath(), StandardCopyOption.REPLACE_EXISTING);
-//            }
-//
-//
-//        } catch (IOException | ResponseException e) {
-//            System.out.println("i am error file upload post ");
-//            e.printStackTrace();
-//        }
-//
-//        return createResponse(Status.OK, NanoHTTPD.MIME_PLAINTEXT, "ok i am ");
-//    }
-
-    //TODO: RECEIVE DATA FROM CONNECTED DEVICES.
     //TODO: STORE RECEIVED DATA TO DATABASE
+    public static String convertStreamToString(InputStream is)
+            throws IOException {
+        Writer writer = new StringWriter();
+
+        char[] buffer = new char[2048];
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(is,
+                    "UTF-8"));
+            int n;
+            while ((n = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, n);
+            }
+        } finally {
+            is.close();
+        }
+        String text = writer.toString();
+        return text;
+    }
+
+    public void addToDb(Map<String,String> data) {
+        ArrayList<Questions> questions;
+        questions = dbHelper.getEventQuestions(e);
+        Boolean lock = false;
+        SurveyTaker st = new SurveyTaker();
+        Map<String,String> questionMap = new HashMap<>();
+        int timesTaken = e.getTimesTaken();
+        Log.i(TAG,"times taken orignally: "+ timesTaken);
+
+        for (int i =0 ;i< questions.size();i++){
+            questions.get(i).getStringID();
+
+            questionMap.put(questions.get(i).getStringID(),questions.get(i).getId() +"");
+        }
+        Log.i(TAG,"question map: "+ questionMap.toString());
+
+            for ( Map.Entry<String, String> entry : data.entrySet()) {
+                Answer a = new Answer();
+                if(entry.getValue()!= null) {
+                    a.setAnswer(entry.getValue());
+                    a.setQualitative(true);
+                    a.setAnswerCluster(e.getAnswerCluster());
+                    Questions q = new Questions();
+                    dbHelper.addAnswer(a, Integer.parseInt(questionMap.get(entry.getKey())));
+                    Log.i(TAG,"Value "+entry.getValue());
+                    Log.i(TAG,"key "+entry.getKey());
+                    if(!lock) {
+                        timesTaken++;
+                        lock=true;
+                    }
+                }
+
+            // do something with key and/or tab
+        }
+
+        Log.i(TAG,"times taken now: "+ timesTaken);
+        e.setTimesTaken(timesTaken);
+        dbHelper.updateEventTimesTaken(e);
+    }
+
+
 }
 

@@ -37,6 +37,8 @@ public class SurveyAdapter  extends CursorRecyclerViewAdapter<SurveyAdapter.Surv
         viewHolder.tv_organizer_name.setText(e.getOrganizerName());
         viewHolder.tv_organizer_initial.setText(firstLetter);
 
+
+        //TODO: remove.
         String htmlName = cursor.getString(cursor.getColumnIndex(Event.COLUMN_HTMLNAME));
         viewHolder.llayout_one.setTag(R.string.htmlName,htmlName);
 

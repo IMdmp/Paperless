@@ -75,13 +75,36 @@
                         <textarea name="question3"></textarea>
                     
                     <div class="padded-bottom"></div>
-                    
-                    <button class="btn fit-parent primary" type="submit" value="submit">Submit</button>
+                    	<pagedialog data-page="true" class="app-page app-active">
+                    <button class="btn fit-parent primary" type="submit" value="submit" id="show-alert" >Submit</button>
+					
+					</pagedialog>
                 </form>
             </div>
         </div>
         
         <!-- scripts -->
-        <script src="   dist/js/phonon.js"></script>
+        <script src="dist/js/phonon.js">
+		</script>
+		 <script>
+            phonon.options({
+                navigator: {
+                    defaultPage: 'home',
+                    animatePages: true,
+                    templateRootDirectory: 'contents/',
+                    enableBrowserBackButton: true // should be disabled on Cordova
+                },
+                i18n: null
+            });
+            var app = phonon.navigator();
+            app.on({page: 'home', content: null}, function(activity) {
+                activity.onCreate(function() {
+                    document.querySelector('#show-alert').on('tap', function() {
+                        phonon.alert('yung  data  mo has been sent na!', 'Thank you!');
+                    });
+                });
+            });
+            app.start();
+        </script>
     </body>
 </html>

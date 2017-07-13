@@ -11,12 +11,13 @@ public class Questions {
     public static final String COLUMN_ID="_questionID";
     public static final String COLUMN_EVENTID = "eventID";
     public static final String COLUMN_SURVEYID="surveyID";
-    public static final String COLUMN_ISQUALITATIVE = "isQualitative";
+    public static final String COLUMN_ISQUALITATIVE = "isQualitatives";
+    public static final String COLUMN_STRINGID= "stringID";
     public static final String COLUMN_QUESTION="question";
 
 
 
-    private String question,parameterName;
+    private String question,parameterName,stringID;
     private Boolean isQualitative;
     private int id;
 
@@ -34,6 +35,12 @@ public class Questions {
         this.parameterName = parameterName;
     }
 
+    public String getStringID(){
+        return this.stringID;
+    }
+    public void setStringID(String stringID){
+        this.stringID = stringID;
+    }
     public Boolean getIsQualitative(){
         return  isQualitative;
     }

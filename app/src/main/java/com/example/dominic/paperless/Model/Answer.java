@@ -7,15 +7,24 @@ package com.example.dominic.paperless.Model;
 public class Answer {
     public static final String TABLE ="answers";
     public static final String COLUMN_ID="_answerID";
-    public static final String COLUMN_QUESTIONID = "questionID";
+    public static final String COLUMN_QUESTIONID = "questionID  ";
     public static final String COLUMN_SURVEYID="surveyID";
     public static final String COLUMN_ISQUALITATIVE="isQualitative";
+
+    public static final String COLUMN_ANSWERCLUSTER ="answercluster";
     public static final String COLUMN_ANSWER="answer";
 
-    private int id;
+    private int id,answerCluster;
     private String answer;
     private Boolean isQualitative;
 
+    public int getAnswerCluster() {
+        return answerCluster;
+    }
+
+    public void setAnswerCluster(int answerCluster) {
+        this.answerCluster = answerCluster;
+    }
 
     public Answer(String answer, Boolean isQualitative) {
         this.answer = answer;
