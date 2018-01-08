@@ -1,6 +1,7 @@
 package com.example.dominic.paperless;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -19,10 +20,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dominic.paperless.Model.Answer;
 import com.example.dominic.paperless.Model.Event;
 import com.example.dominic.paperless.Model.Questions;
+import com.example.dominic.paperless.utils.ApManager;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -46,7 +49,7 @@ public class StartServerActivity extends Activity {
 
     ImageButton ibBack, ibStartServer;
     Button button_checkdb;
-    TextView tvServerStatus, tvEventName, tvConnected, tvEvaluated;
+    TextView tvServerStatus, tvEventName, tvConnected, tvEvaluated,tv_export,tv_test;
     EditText etIPAdress;
     LinearLayout llViewStats;
     String textfile;
@@ -66,16 +69,15 @@ public class StartServerActivity extends Activity {
 
         tvServerStatus = (TextView) findViewById(R.id.tv_server_status);
         tvEventName = (TextView) findViewById(R.id.tv_event_name);
-        tvConnected = (TextView) findViewById(R.id.tv_connected);
-        tvEvaluated = (TextView) findViewById(R.id.tv_evaluated);
+        llViewStats = (LinearLayout) findViewById(R.id.ll_view_stats);
         button_checkdb = (Button) findViewById(R.id.button_dbcheck);
         etIPAdress = (EditText) findViewById(R.id.et_ip_address);
-
-        llViewStats = (LinearLayout) findViewById(R.id.ll_view_stats);
+        tv_export = (TextView) findViewById(R.id.tv_export);
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         int eventID = getIntent().getIntExtra("eventID", 2);
         Event e =  dbHelper.getEvent(eventID);
         tvEventName.setText(e.getFormName());
+        tv_test = (TextView) findViewById(R.id.tv_test);
         //    String htmlName = getIntent().getStringExtra("htmlName");
 
         try {
@@ -85,7 +87,12 @@ public class StartServerActivity extends Activity {
         }
 
         Log.i(TAG, "GOT EVENT ID: " + eventID);
-
+        tv_test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                ApManager.configApState(StartServerActivity.this);
+            }
+        });
         //set on click listeners
         ibBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,6 +127,7 @@ public class StartServerActivity extends Activity {
                 try {
                     //start
                     if (!isStarted) {
+                        ApManager.configApState(StartServerActivity.this);
 //                        adr = new WebServer(DEFAULT_PORT, getBaseContext(), id);
                         System.out.println("trying to start again.");
                         Event e = dbHelper.getEvent(id);
@@ -152,6 +160,7 @@ public class StartServerActivity extends Activity {
                     } else {
                         isStarted = false;
                         if (adr != null) {
+                            ApManager.configApState(StartServerActivity.this);
                             adr.stop();
                             etIPAdress.setText("Server Stopped");
                             Log.i(TAG, "Server Stopped.");
@@ -173,19 +182,20 @@ public class StartServerActivity extends Activity {
 
             }
         });
-
+        tv_export.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getBaseContext(),"exporting...",Toast.LENGTH_SHORT).show();
+                Log.i(TAG,"exporting db");
+                exportDB();
+                Toast.makeText(getBaseContext(),"successfully exported! ",Toast.LENGTH_SHORT).show();
+            }
+        });
         llViewStats.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent dbmanager = new Intent(getBaseContext(), AndroidDatabaseManager.class);
                 startActivity(dbmanager);
-            }
-        });
-        tvConnected.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG,"exporting db");
-                exportDB();
             }
         });
 
@@ -209,7 +219,7 @@ public class StartServerActivity extends Activity {
             exportDir.mkdirs();
         }
 
-        File file = new File(exportDir, "csvname.csv");
+        File file = new File(exportDir, "paperlessSurveys.csv");
         try {
             file.createNewFile();
             CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
@@ -217,8 +227,12 @@ public class StartServerActivity extends Activity {
             Cursor curCSV = db.rawQuery("SELECT * FROM "+ Answer.TABLE, null);
             csvWrite.writeNext(curCSV.getColumnNames());
             while (curCSV.moveToNext()) {
+                int columnCount = curCSV.getColumnCount();
                 //Which column you want to exprort
-                String arrStr[] = {curCSV.getString(0), curCSV.getString(1), curCSV.getString(2)};
+                String arrStr[] = new String[columnCount];
+                for(int i =0 ;i<columnCount;i++){
+                    arrStr[i] = curCSV.getString(i);
+                }
                 csvWrite.writeNext(arrStr);
             }
             csvWrite.close();

@@ -109,19 +109,13 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_connected"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-thin"
-                android:text="0"
-                android:textSize="50sp" />
 
             <TextView
+                android:id="@+id/tv_export"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
-                android:text="connected"
+                android:text="Export to csv"
                 android:textAllCaps="true"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -135,19 +129,13 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_evaluated"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-thin"
-                android:text="0"
-                android:textSize="50sp" />
 
             <TextView
+                android:id="@+id/tv_test"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
-                android:text="evaluated"
+                android:text=""
                 android:textAllCaps="true"
                 android:textSize="20sp"
                 android:textStyle="bold" />
