@@ -5,6 +5,7 @@ package com.example.dominic.paperless;
  */
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import android.content.Context;
@@ -23,7 +24,10 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,7 +81,7 @@ public class WebServer extends NanoHTTPD {
 
     @Override
     public Response serve(IHTTPSession session) {
-
+        System.out.println("trying to serve...");
 
         Method method = session.getMethod();
         //Log.i(TAG,"SESSION START. ");
@@ -92,22 +96,35 @@ public class WebServer extends NanoHTTPD {
         } catch (ResponseException e) {
             e.printStackTrace();
         }
-        //final String json = map.get("content");
-      //  Log.i(TAG,"JSON: "+json);
-
+        final String json = map.get("content");
+        Log.i(TAG,"JSON: "+json);
+        InputStream mbuffer = null;
         if(!session.getParms().isEmpty()){
             Log.i(TAG,"session: "+ session.getParms());
             final Map<String,String> map1= session.getParms();
-            addToDb(map1);
+            AsyncTaskRunner runner = new AsyncTaskRunner(map1);
+            runner.execute();
+//            addToDb(map1);
+            this.htmlFile="sample_form.html";
+            try {
+                mbuffer = mContext.getAssets().open(htmlFile);
+
+            //    Log.i(TAG,"contwext"+ mbuffer.toString());
+            return newFixedLengthResponse(HTTP_OK, MIME_HTML, convertStreamToString(mbuffer));
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
-        final StringBuilder buf = new StringBuilder();
+        }else{
+            this.htmlFile=e.getHtmlName();
+        }
+//        final StringBuilder buf = new StringBuilder();
 //        for (Entry<Object, Object> kv : header.entrySet())
 //            buf.append(kv.getKey() + " : " + kv.getValue() + "\n");
-        InputStream mbuffer = null;
-       // Log.i(TAG,"went here." );
+
+        Log.i(TAG,"went here." );
         try {
             if(session.getUri()!=null){
-            //    Log.i(TAG,"went here too." );
+                Log.i(TAG,"went here too." );
                 if(session.getUri().contains(".js")){
                     mbuffer = mContext.getAssets().open(session.getUri().substring(1));
                     return  newFixedLengthResponse(HTTP_OK, MIME_JS, convertStreamToString(mbuffer));
@@ -122,14 +139,14 @@ public class WebServer extends NanoHTTPD {
 //                    return  newFixedLengthResponse(HTTP_OK, MIME_PNG, convertStreamToString(mbuffer));
 //                }
                 else{
-               //     Log.i(TAG,"return html:");
-//                    mbuffer = mContext.getAssets().open();
+                    Log.i(TAG,"return html:");
+                    mbuffer = mContext.getAssets().open(htmlFile);
                 //    Log.i(TAG,"contwext"+ mbuffer.toString());
                     return newFixedLengthResponse(HTTP_OK, MIME_HTML, convertStreamToString(mbuffer));
                 }
             }
             else{
-             //   Log.i(TAG,"return html:");
+                Log.i(TAG,"return html:");
                 mbuffer = mContext.getAssets().open(htmlFile);
               //  Log.i(TAG,"context"+ mbuffer.toString());
                 return newFixedLengthResponse(HTTP_OK, MIME_HTML,convertStreamToString(mbuffer));
@@ -141,8 +158,8 @@ public class WebServer extends NanoHTTPD {
             e.printStackTrace();
         }
 
-        return newFixedLengthResponse(HTTP_OK, MIME_HTML, String.valueOf(mbuffer));
-
+//        return newFixedLengthResponse(HTTP_OK, MIME_HTML, String.valueOf(mbuffer));
+return null;
     }
 
     //TODO: STORE RECEIVED DATA TO DATABASE
@@ -169,7 +186,6 @@ public class WebServer extends NanoHTTPD {
         ArrayList<Questions> questions;
         questions = dbHelper.getEventQuestions(e);
         Boolean lock = false;
-        SurveyTaker st = new SurveyTaker();
         Map<String,String> questionMap = new HashMap<>();
         int timesTaken = e.getTimesTaken();
         Log.i(TAG,"times taken orignally: "+ timesTaken);
@@ -180,10 +196,25 @@ public class WebServer extends NanoHTTPD {
             questionMap.put(questions.get(i).getStringID(),questions.get(i).getId() +"");
         }
         Log.i(TAG,"question map: "+ questionMap.toString());
+        SurveyTaker st = new SurveyTaker();
 
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+        st.setDateAnswered(timeStamp);
+        st.setRespondentEmail("sample@sample.com");
+        Log.i(TAG,"times taken orignally: "+ timesTaken);
             for ( Map.Entry<String, String> entry : data.entrySet()) {
                 Answer a = new Answer();
+
+
                 if(entry.getValue()!= null) {
+                    if(entry.getKey().equals("idnum")){
+                    st.setIdNumber(entry.getValue());
+
+                    }
+                    if(entry.getKey().equals("name")){
+                        st.setRespondentName(entry.getValue());
+                    }
+
                     a.setAnswer(entry.getValue());
                     a.setQualitative(true);
                     a.setAnswerCluster(e.getAnswerCluster());
@@ -191,20 +222,29 @@ public class WebServer extends NanoHTTPD {
                     dbHelper.addAnswer(a, Integer.parseInt(questionMap.get(entry.getKey())));
                     Log.i(TAG,"Value "+entry.getValue());
                     Log.i(TAG,"key "+entry.getKey());
-                    if(!lock) {
-                        timesTaken++;
-                        lock=true;
-                    }
                 }
 
-            // do something with key and/or tab
-        }
 
-        Log.i(TAG,"times taken now: "+ timesTaken);
-        e.setTimesTaken(timesTaken);
-        dbHelper.updateEventTimesTaken(e);
+            // do something with key and/or tab
+        }   dbHelper.createSurveyTaker(st,e.getId());
     }
 
+    public void addToDb2(Map<String,String>data){
 
+    }
+    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+
+        final Map<String,String> map;
+        AsyncTaskRunner(Map<String,String>map) {
+        this.map =map;
+            }
+        @Override
+        protected String doInBackground(String... params) {
+            addToDb(this.map);
+            return "";
+
+
+    }
+}
 }
 

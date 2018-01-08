@@ -32,15 +32,15 @@ public class SelectSurveyActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_survey);
 
+
         rvSelectSurvey = (RecyclerView) findViewById(R.id.rv_select_survey);
 
         rvLayoutManager = new LinearLayoutManager(getBaseContext());
         rvSelectSurvey.setLayoutManager(rvLayoutManager);
 
-         databaseHelper = new DatabaseHelper(getBaseContext());
-
-
-        fillDB();
+        databaseHelper = new DatabaseHelper(getBaseContext());
+        //fills data with initial data
+//        fillDB();
 
 
     }
@@ -60,7 +60,7 @@ public class SelectSurveyActivity extends Activity {
                                                      public void onItemClick(View v) {
                                                          Intent i = new Intent();
                                                          i.setClass(v.getContext(),StartServerActivity.class);
-                                                       eventID = (int) v.getTag(R.string.eventID);
+                                                         eventID = (int) v.getTag(R.string.eventID);
                                                          i.putExtra("htmlName",(String) v.getTag(R.string.htmlName));
                                                          i.putExtra("eventID",(int) v.getTag(R.string.eventID));
                                                       //   i.putExtra("id", (int) v.getTag());

@@ -27,7 +27,7 @@ import static com.example.dominic.paperless.Model.Event.COLUMN_ORGANIZERNAME;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String SCHEMA  = "paperless";
-    public static final int    VERSION = 40 ;
+    public static final int    VERSION = 42 ;
 
     public DatabaseHelper(Context context) {
 
@@ -249,6 +249,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         long id= db.insert(SurveyTaker.TABLE,null,cv);
+        System.out.println("adding to db...");
         db.close();
         return  id;
 

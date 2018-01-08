@@ -17,7 +17,7 @@
         
         <div class="content">
             <div class="padded-full phone-11 tablet-10 large-4">
-                <form method="POST">
+                <form method="POST" name="test" value="test"id ="test">
                     <h3>Identification</h3>
                         <input type="text" placeholder="Full Name" name="name">
                         <input type="text" placeholder="ID Number" name="idnum">
@@ -82,7 +82,7 @@
                 </form>
             </div>
         </div>
-        
+
         <!-- scripts -->
         <script src="dist/js/phonon.js">
 		</script>
@@ -100,8 +100,8 @@
             app.on({page: 'home', content: null}, function(activity) {
                 activity.onCreate(function() {
                     document.querySelector('#show-alert').on('tap', function() {
-                        phonon.alert('yung  data  mo has been sent na!', 'Thank you!');
-                    });
+                        phonon.alert('yung  data  mo has been sent na!', 'Thank you!');document.getElementById('test').submit();
+                                         });
                 });
             });
             app.start();

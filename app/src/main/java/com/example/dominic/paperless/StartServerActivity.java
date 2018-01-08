@@ -1,9 +1,11 @@
 package com.example.dominic.paperless;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
@@ -22,10 +24,14 @@ import com.example.dominic.paperless.Model.Answer;
 import com.example.dominic.paperless.Model.Event;
 import com.example.dominic.paperless.Model.Questions;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
+import java.net.InetAddress;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
@@ -66,10 +72,17 @@ public class StartServerActivity extends Activity {
         etIPAdress = (EditText) findViewById(R.id.et_ip_address);
 
         llViewStats = (LinearLayout) findViewById(R.id.ll_view_stats);
-
-        //    String htmlName = getIntent().getStringExtra("htmlName");
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
         int eventID = getIntent().getIntExtra("eventID", 2);
+        Event e =  dbHelper.getEvent(eventID);
+        tvEventName.setText(e.getFormName());
+        //    String htmlName = getIntent().getStringExtra("htmlName");
 
+        try {
+            adr = new WebServer(DEFAULT_PORT, getBaseContext(), eventID);
+        } catch (IOException error) {
+            error.printStackTrace();
+        }
 
         Log.i(TAG, "GOT EVENT ID: " + eventID);
 
@@ -91,11 +104,7 @@ public class StartServerActivity extends Activity {
 
                 // String html= (String) v.getTag(R.string.htmlName);
                 int id = (int) v.getTag(R.string.eventID);
-                try {
-                    adr = new WebServer(DEFAULT_PORT, getBaseContext(), id);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
 
                 DatabaseHelper databaseHelper = new DatabaseHelper(getBaseContext());
 
@@ -107,11 +116,12 @@ public class StartServerActivity extends Activity {
 //                    adr.setEventID(eventID);
 
                 //  testDatabase();
-
+                DatabaseHelper dbHelper = new DatabaseHelper(getBaseContext());
                 try {
                     //start
                     if (!isStarted) {
-                        DatabaseHelper dbHelper = new DatabaseHelper(getBaseContext());
+//                        adr = new WebServer(DEFAULT_PORT, getBaseContext(), id);
+                        System.out.println("trying to start again.");
                         Event e = dbHelper.getEvent(id);
 
                         int answerCluster = e.getAnswerCluster();
@@ -122,12 +132,17 @@ public class StartServerActivity extends Activity {
                         Log.i(TAG, "answer cluster now: " + e.getAnswerCluster());
 
                         adr.start();
-                        WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
-                        String ip = android.text.format.Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
-
-                        ///TODO: IF DOESN WORK DELETE SHIT
-                        String ip2 = "" + ip + ":8080";
-                        Log.i(TAG, "Server running at " + ip + ":8080");
+//                        WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+//                        WifiInfo wifiinfo = manager.getConnectionInfo();
+//                        byte[] myIPAddress = BigInteger.valueOf(wifiinfo.getIpAddress()).toByteArray();
+//            // you must reverse the byte array before conversion. Use Apache's commons library
+//                        ArrayUtils.reverse(myIPAddress);
+//                        InetAddress myInetIP = InetAddress.getByAddress(myIPAddress);
+//                        String myIP = myInetIP.getHostAddress();
+//
+//                        ///TODO: IF DOESN WORK DELETE SHIT
+                        String ip2 = "Server running at: " + "192.168.43.1" + ":8080";
+//                        Log.i(TAG, "Server running at " + myIP + ":8080");
                         etIPAdress.setText(ip2);
                         //    ibStartServer.setImageResource(R.drawable.power_button_on);
                         ibStartServer.setBackground(getApplication().getResources().getDrawable(R.drawable.power_button_on));
@@ -138,11 +153,11 @@ public class StartServerActivity extends Activity {
                         isStarted = false;
                         if (adr != null) {
                             adr.stop();
-                            etIPAdress.setText("");
+                            etIPAdress.setText("Server Stopped");
                             Log.i(TAG, "Server Stopped.");
-
+                            ibStartServer.setBackground(getApplication().getResources().getDrawable(R.drawable.power_button_off));
                         }
-                        ibStartServer.setBackground(getApplication().getResources().getDrawable(R.drawable.power_button_off));
+
                     }
                 } catch (IOException ioe) {
                     Log.w(TAG, "The server could not start.");

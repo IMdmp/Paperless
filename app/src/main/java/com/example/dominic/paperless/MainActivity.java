@@ -1,5 +1,6 @@
 package com.example.dominic.paperless;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +32,7 @@ import static android.R.attr.button;
 import static android.R.attr.data;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     private static final int DEFAULT_PORT = 8080;
     private static final String TAG = "LOCAL_SERVER";
 
