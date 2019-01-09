@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">Paperless</string>
-    <string name="htmlName">html</string>
-    <string name="eventID">eventID</string>
-    <string name="export">export</string>
-</resources>
