@@ -12,6 +12,7 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:supportsRtl="true"
+        android:name=".PaperlessApplication"
         android:theme="@style/AppTheme">
         <activity android:name=".features.SelectSurveyActivity">
             <intent-filter>
