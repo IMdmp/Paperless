@@ -13,17 +13,17 @@
         android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SelectSurveyActivity">
+        <activity android:name=".features.SelectSurveyActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
-        <activity android:name=".StartServerActivity" />
+        <activity android:name=".features.MainActivity"></activity>
+        <activity android:name=".features.StartServerActivity" />
         <activity android:name=".AndroidDatabaseManager"></activity>
-        <activity android:name=".ViewStatisticsActivity"></activity>
+        <activity android:name=".features.ViewStatisticsActivity"></activity>
     </application>
 
 </manifest>

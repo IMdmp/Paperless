@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     android:background="@drawable/background"
-    tools:context=".MainActivity">
+    tools:context=".features.MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
